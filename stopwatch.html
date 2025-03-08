@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0a192f;
+            color: white;
+        }
+        
+        .stopwatch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            padding: 25px;
+            border-radius: 15px;
+            background: #1c2541;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            text-align: center;
+            position: relative;
+        }
+        .stopwatch-container::before {
+            content: '\f017'; /* Clock icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5em;
+            color: white;
+        }
+        .stopwatch {
+            font-size: 3em;
+            font-weight: bold;
+            padding: 10px 20px;
+            margin-bottom: 15px;
+            border: 3px solid cyan;
+            border-radius: 10px;
+            box-shadow: 0 0 15px cyan;
+        }
+        .buttons button {
+            padding: 12px 20px;
+            margin: 8px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ff5733;
+            color: white;
+        }
+        .buttons button:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+        .laps {
+            list-style: none;
+            padding: 0;
+            width: 250px;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 2px solid white;
+            margin-top: 15px;
+            padding-top: 10px;
+        }
+        .laps li {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch-container">
+        <div class="stopwatch">00:00:00.000</div>
+        <div class="buttons">
+            <button onclick="startStopwatch()"><i class="fas fa-play"></i> Start</button>
+            <button onclick="pauseStopwatch()"><i class="fas fa-pause"></i> Pause</button>
+            <button onclick="resetStopwatch()"><i class="fas fa-redo"></i> Reset</button>
+            <button onclick="recordLap()"><i class="fas fa-flag"></i> Lap</button>
+        </div>
+        <ul class="laps"></ul>
+    </div>
+
+    <script>
+        let startTime, updatedTime, difference, timer;
+        let running = false;
+        let laps = document.querySelector('.laps');
+        let stopwatch = document.querySelector('.stopwatch');
+
+        function startStopwatch() {
+            if (!running) {
+                startTime = new Date().getTime() - (difference || 0);
+                timer = setInterval(updateTime, 10);
+                running = true;
+            }
+        }
+
+        function updateTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            let time = new Date(difference);
+            let minutes = time.getUTCMinutes().toString().padStart(2, '0');
+            let seconds = time.getUTCSeconds().toString().padStart(2, '0');
+            let milliseconds = time.getUTCMilliseconds().toString().padStart(3, '0');
+            stopwatch.textContent = `00:${minutes}:${seconds}.${milliseconds}`;
+        }
+
+        function pauseStopwatch() {
+            if (running) {
+                clearInterval(timer);
+                running = false;
+            }
+        }
+
+        function resetStopwatch() {
+            clearInterval(timer);
+            stopwatch.textContent = "00:00:00.000";
+            difference = 0;
+            running = false;
+            laps.innerHTML = "";
+        }
+
+        function recordLap() {
+            if (running) {
+                let lapItem = document.createElement("li");
+                lapItem.textContent = stopwatch.textContent;
+                laps.appendChild(lapItem);
+            }
+        }
+    </script>
+</body>
+</html>
